@@ -2,6 +2,19 @@ import { useEffect, useRef, useState } from 'react'
 
 const STORAGE_KEY = 'water_v1'
 const QUICK_AMOUNTS = [100, 200, 500]
+const VAPID_PUBLIC_KEY =
+  'BM9nqMVXeDpmpv8GKBwjXibC3th-i6sDXL3KAKF-NrbqJIQgRK-fqhbp3-ASr3c943ZvkWR8pWZ6ZbJYm-IpAK8'
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; i++) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
 
 function todayStr() {
   const d = new Date()
@@ -35,6 +48,7 @@ function loadState() {
     ],
     sheetsUrl: '',
     firedToday: [],
+    pushEnabled: false,
   }
   if (!raw) return defaults
   try {
@@ -116,6 +130,93 @@ export default function App() {
     }, 20 * 1000)
     return () => clearInterval(id)
   }, [])
+
+  // 註冊 Service Worker（供推播通知使用）
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {})
+    }
+  }, [])
+
+  // 推播已啟用時，提醒時間或目標改變要重新同步訂閱資訊到 Google Sheet
+  useEffect(() => {
+    if (!state.pushEnabled || !state.sheetsUrl) return
+    const id = setTimeout(() => {
+      syncPushSubscription()
+    }, 1500)
+    return () => clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.reminders, state.goal, state.pushEnabled, state.sheetsUrl])
+
+  const syncPushSubscription = async () => {
+    try {
+      const reg = await navigator.serviceWorker.ready
+      const sub = await reg.pushManager.getSubscription()
+      if (!sub) return
+      await fetch(stateRef.current.sheetsUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          kind: 'subscription',
+          subscription: sub,
+          reminders: stateRef.current.reminders,
+          goal: stateRef.current.goal,
+        }),
+      })
+    } catch {
+      /* 略過同步失敗 */
+    }
+  }
+
+  const enablePush = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      return { ok: false, message: '這個瀏覽器不支援推播通知' }
+    }
+    if (!state.sheetsUrl) {
+      return { ok: false, message: '請先設定並儲存 Google Sheets 備份網址，推播訂閱需要存在那裡' }
+    }
+    const permission = await Notification.requestPermission()
+    if (permission !== 'granted') {
+      return { ok: false, message: '未取得通知權限' }
+    }
+    try {
+      const reg = await navigator.serviceWorker.ready
+      let sub = await reg.pushManager.getSubscription()
+      if (!sub) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        })
+      }
+      await fetch(state.sheetsUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          kind: 'subscription',
+          subscription: sub,
+          reminders: state.reminders,
+          goal: state.goal,
+        }),
+      })
+      setState((prev) => ({ ...prev, pushEnabled: true }))
+      return { ok: true, message: '推播通知已啟用' }
+    } catch (err) {
+      return { ok: false, message: '訂閱失敗：' + String(err) }
+    }
+  }
+
+  const disablePush = async () => {
+    try {
+      const reg = await navigator.serviceWorker.ready
+      const sub = await reg.pushManager.getSubscription()
+      if (sub) await sub.unsubscribe()
+    } catch {
+      /* 略過 */
+    }
+    setState((prev) => ({ ...prev, pushEnabled: false }))
+  }
 
   const addWater = (amount) => {
     const entry = { time: nowTimeLabel(), amount }
@@ -221,15 +322,43 @@ export default function App() {
           onClose={() => setShowSettings(false)}
           onSync={syncToSheets}
           syncStatus={syncStatus}
+          onEnablePush={enablePush}
+          onDisablePush={disablePush}
         />
       )}
     </div>
   )
 }
 
-function SettingsPanel({ state, setState, notifPermission, setNotifPermission, onClose, onSync, syncStatus }) {
+function SettingsPanel({
+  state,
+  setState,
+  notifPermission,
+  setNotifPermission,
+  onClose,
+  onSync,
+  syncStatus,
+  onEnablePush,
+  onDisablePush,
+}) {
   const [goalInput, setGoalInput] = useState(state.goal)
   const [sheetsInput, setSheetsInput] = useState(state.sheetsUrl)
+  const [pushStatus, setPushStatus] = useState('')
+  const [pushLoading, setPushLoading] = useState(false)
+
+  const handleEnablePush = async () => {
+    setPushLoading(true)
+    const result = await onEnablePush()
+    setPushStatus(result.message)
+    setPushLoading(false)
+  }
+
+  const handleDisablePush = async () => {
+    setPushLoading(true)
+    await onDisablePush()
+    setPushStatus('推播通知已關閉')
+    setPushLoading(false)
+  }
 
   const saveGoal = () => {
     const n = parseInt(goalInput, 10)
@@ -328,9 +457,29 @@ function SettingsPanel({ state, setState, notifPermission, setNotifPermission, o
           )}
           {notifPermission === 'granted' && (
             <div className="notif-status">
-              通知權限已開啟。提醒需要 Brave 保持在背景執行才會準時跳出，若手機把 App 完全關閉可能不會提醒。
+              通知權限已開啟。App內建的提醒需要 Brave 保持在背景執行才會準時跳出，若手機把 App 完全關閉可能不會提醒。
             </div>
           )}
+        </div>
+
+        <div className="field-group">
+          <label className="field-label">推播通知（更可靠，App關閉也會提醒）</label>
+          <div className="notif-status">
+            需要先設定好下方的 Google Sheets 備份網址，訂閱資訊會存在那裡讓伺服器讀取。
+          </div>
+          {!state.pushEnabled ? (
+            <button className="primary-btn" onClick={handleEnablePush} disabled={pushLoading}>
+              {pushLoading ? '設定中…' : '啟用推播通知'}
+            </button>
+          ) : (
+            <>
+              <div className="notif-status">推播通知已啟用 ✓</div>
+              <button className="secondary-btn" onClick={handleDisablePush} disabled={pushLoading}>
+                關閉推播通知
+              </button>
+            </>
+          )}
+          {pushStatus && <div className="notif-status">{pushStatus}</div>}
         </div>
 
         <div className="field-group">
