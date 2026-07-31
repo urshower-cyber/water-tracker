@@ -21,7 +21,9 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background: radial-gradient(circle at 50% 0%, var(--bg) 0%, var(--bg-deep) 75%);
+  background:
+    linear-gradient(180deg, rgba(9, 11, 51, 0.62) 0%, rgba(9, 11, 51, 0.88) 100%),
+    url('/bg-sky.jpg') center / cover fixed no-repeat;
   color: var(--ink);
   min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
@@ -340,6 +342,29 @@ button { font-family: inherit; }
   font-size: 20px;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
+}
+
+.time-select {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--foam);
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.time-select option {
+  background: var(--card);
+  color: var(--foam);
+}
+
+.time-colon {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-dim);
 }
 
 .toggle {

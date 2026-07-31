@@ -421,25 +421,44 @@ function SettingsPanel({
         </div>
 
         <div className="field-group">
-          <label className="field-label">提醒時間</label>
+          <label className="field-label">提醒時間（24小時制）</label>
           <div className="reminder-list">
-            {state.reminders.map((r) => (
-              <div className="reminder-item" key={r.id}>
-                <input
-                  type="time"
-                  value={r.time}
-                  onChange={(e) => updateReminder(r.id, { time: e.target.value })}
-                />
-                <button
-                  className={`toggle ${r.enabled ? 'on' : 'off'}`}
-                  onClick={() => updateReminder(r.id, { enabled: !r.enabled })}
-                  aria-label="開關提醒"
-                />
-                <button className="remove-btn" onClick={() => removeReminder(r.id)} aria-label="刪除">
-                  ✕
-                </button>
-              </div>
-            ))}
+            {state.reminders.map((r) => {
+              const [hh, mm] = r.time.split(':')
+              return (
+                <div className="reminder-item" key={r.id}>
+                  <select
+                    className="time-select"
+                    value={hh}
+                    onChange={(e) => updateReminder(r.id, { time: `${e.target.value}:${mm}` })}
+                  >
+                    {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0')).map((h) => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
+                  </select>
+                  <span className="time-colon">:</span>
+                  <select
+                    className="time-select"
+                    value={mm}
+                    onChange={(e) => updateReminder(r.id, { time: `${hh}:${e.target.value}` })}
+                  >
+                    {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
+                      .filter((_, i) => i % 5 === 0)
+                      .map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                  </select>
+                  <button
+                    className={`toggle ${r.enabled ? 'on' : 'off'}`}
+                    onClick={() => updateReminder(r.id, { enabled: !r.enabled })}
+                    aria-label="開關提醒"
+                  />
+                  <button className="remove-btn" onClick={() => removeReminder(r.id)} aria-label="刪除">
+                    ✕
+                  </button>
+                </div>
+              )
+            })}
           </div>
           <button className="add-reminder-btn" onClick={addReminder}>
             ＋ 新增提醒時間
