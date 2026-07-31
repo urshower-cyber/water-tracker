@@ -1,17 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg: #14185f;
-  --bg-deep: #090b33;
-  --card: #1b1f79;
-  --card-border: rgba(150, 165, 255, 0.28);
-  --aqua: #4fc3f7;
-  --aqua-dim: #2f6fc2;
-  --sand: #ffc857;
-  --foam: #f6f8ff;
-  --ink: #e2e6ff;
-  --ink-dim: #aab2ec;
-  --danger: #ff8a80;
+  --bg-top: #eaf7ff;
+  --bg-bottom: #ffffff;
+  --card: #ffffff;
+  --card-border: rgba(41, 182, 246, 0.25);
+  --aqua: #29b6f6;
+  --aqua-strong: #039be5;
+  --aqua-dim: #1e88e5;
+  --sun: #ff9142;
+  --sun-strong: #e8720a;
+  --ink: #1c4a68;
+  --ink-dim: #6c8ba0;
+  --heading: #0d3b5c;
+  --danger: #e6543f;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 19px;
 }
@@ -21,9 +23,7 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background:
-    linear-gradient(180deg, rgba(30, 74, 140, 0.55) 0%, rgba(30, 74, 140, 0.12) 100%),
-    url('/bg-sky.jpg') center / cover fixed no-repeat;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 55%);
   color: var(--ink);
   min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
@@ -35,16 +35,24 @@ button { font-family: inherit; }
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 26px 20px 44px;
   display: flex;
   flex-direction: column;
+}
+
+/* ---- 頂部海景區 ---- */
+.hero {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(234, 247, 255, 0.94) 92%),
+    url('/bg-sky.jpg') center 30% / cover no-repeat;
+  border-radius: 0 0 40px 40px;
+  padding: 26px 20px 20px;
 }
 
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .brand {
@@ -52,14 +60,14 @@ button { font-family: inherit; }
   font-size: 30px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: var(--foam);
-  text-shadow: 0 2px 10px rgba(9, 11, 51, 0.55);
+  color: var(--heading);
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.7);
 }
 
 .icon-btn {
-  background: var(--card);
+  background: rgba(255, 255, 255, 0.85);
   border: 2px solid var(--card-border);
-  color: var(--foam);
+  color: var(--aqua-strong);
   width: 54px;
   height: 54px;
   border-radius: 16px;
@@ -69,23 +77,25 @@ button { font-family: inherit; }
   cursor: pointer;
   font-size: 26px;
   transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 14px rgba(41, 182, 246, 0.18);
 }
 
 .icon-btn:active {
   transform: scale(0.92);
-  background: var(--aqua-dim);
+  background: var(--aqua);
+  color: white;
 }
 
 .tank-wrap {
   position: relative;
-  width: 260px;
-  height: 320px;
-  margin: 30px auto 10px;
-  border-radius: 130px 130px 34px 34px;
-  border: 4px solid var(--card-border);
-  background: var(--card);
+  width: 250px;
+  height: 300px;
+  margin: 22px auto 4px;
+  border-radius: 125px 125px 32px 32px;
+  border: 5px solid #ffffff;
+  background: #ffffff;
   overflow: hidden;
-  box-shadow: inset 0 0 44px rgba(0,0,0,0.35);
+  box-shadow: 0 16px 34px rgba(20, 100, 160, 0.22), inset 0 0 20px rgba(41, 182, 246, 0.08);
 }
 
 .tank-water {
@@ -129,33 +139,37 @@ button { font-family: inherit; }
 
 .tank-number {
   font-family: 'Fraunces', serif;
-  font-size: 62px;
+  font-size: 60px;
   font-weight: 700;
-  color: var(--foam);
+  color: var(--heading);
   line-height: 1;
-  text-shadow: 0 2px 14px rgba(0,0,0,0.3);
 }
 
 .tank-goal {
   font-size: 19px;
-  color: var(--foam);
+  color: var(--ink);
   margin-top: 8px;
   font-weight: 600;
-  opacity: 0.9;
 }
 
 .tank-percent {
   font-size: 17px;
   font-weight: 800;
-  color: var(--sand);
+  color: var(--sun-strong);
   margin-top: 10px;
+}
+
+/* ---- 下方內容區 ---- */
+.content {
+  flex: 1;
+  padding: 24px 20px 44px;
 }
 
 .quick-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
-  margin: 30px 0 14px;
+  margin: 0 0 14px;
 }
 
 .quick-btn {
@@ -163,18 +177,20 @@ button { font-family: inherit; }
   border: 2px solid var(--card-border);
   border-radius: 22px;
   padding: 22px 8px;
-  color: var(--foam);
+  color: var(--heading);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  box-shadow: 0 6px 16px rgba(41, 182, 246, 0.12);
 }
 
 .quick-btn:active {
   transform: scale(0.94);
-  background: var(--aqua-dim);
+  background: var(--aqua);
+  color: white;
   border-color: var(--aqua);
 }
 
@@ -189,6 +205,8 @@ button { font-family: inherit; }
   color: var(--ink-dim);
 }
 
+.quick-btn:active .unit { color: rgba(255,255,255,0.85); }
+
 .undo-row {
   text-align: center;
   min-height: 36px;
@@ -197,14 +215,15 @@ button { font-family: inherit; }
 .undo-btn {
   background: none;
   border: none;
-  color: var(--sand);
+  color: var(--sun-strong);
   text-decoration: underline;
   font-size: 17px;
   cursor: pointer;
   padding: 8px;
+  font-weight: 600;
 }
 
-.log-section { margin-top: 22px; }
+.log-section { margin-top: 14px; }
 
 .log-title {
   font-size: 17px;
@@ -230,6 +249,7 @@ button { font-family: inherit; }
   padding: 14px 18px;
   font-size: 19px;
   font-weight: 600;
+  color: var(--heading);
 }
 
 .log-item .time { color: var(--ink-dim); }
@@ -245,7 +265,7 @@ button { font-family: inherit; }
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(9, 11, 51, 0.78);
+  background: rgba(13, 59, 92, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: flex-end;
@@ -261,7 +281,7 @@ button { font-family: inherit; }
   max-width: 480px;
   max-height: 88vh;
   overflow-y: auto;
-  background: var(--bg);
+  background: #ffffff;
   border: 2px solid var(--card-border);
   border-bottom: none;
   border-radius: 30px 30px 0 0;
@@ -285,14 +305,14 @@ button { font-family: inherit; }
   font-family: 'Fraunces', serif;
   font-size: 26px;
   margin: 0;
-  color: var(--foam);
+  color: var(--heading);
 }
 
 .field-group { margin-bottom: 26px; }
 
 .field-label {
   font-size: 18px;
-  color: var(--foam);
+  color: var(--heading);
   font-weight: 700;
   margin-bottom: 10px;
   display: block;
@@ -306,9 +326,9 @@ button { font-family: inherit; }
 
 .goal-input-row input[type="number"] {
   flex: 1;
-  background: var(--card);
+  background: #f2fbff;
   border: 2px solid var(--card-border);
-  color: var(--foam);
+  color: var(--heading);
   font-size: 26px;
   font-family: 'Fraunces', serif;
   padding: 14px 16px;
@@ -329,27 +349,17 @@ button { font-family: inherit; }
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--card);
+  background: #f2fbff;
   border: 2px solid var(--card-border);
   border-radius: 16px;
   padding: 12px 14px;
-}
-
-.reminder-item input[type="time"] {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--foam);
-  font-size: 20px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
 }
 
 .time-select {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--foam);
+  color: var(--heading);
   font-size: 22px;
   font-weight: 700;
   font-family: 'Inter', sans-serif;
@@ -358,8 +368,8 @@ button { font-family: inherit; }
 }
 
 .time-select option {
-  background: var(--card);
-  color: var(--foam);
+  background: #ffffff;
+  color: var(--heading);
 }
 
 .time-colon {
@@ -373,13 +383,13 @@ button { font-family: inherit; }
   width: 48px;
   height: 28px;
   border-radius: 14px;
-  background: var(--aqua-dim);
+  background: var(--aqua);
   border: none;
   cursor: pointer;
   flex-shrink: 0;
 }
 
-.toggle.off { background: rgba(255,255,255,0.14); }
+.toggle.off { background: #cfe3ee; }
 
 .toggle::after {
   content: '';
@@ -391,6 +401,7 @@ button { font-family: inherit; }
   border-radius: 50%;
   background: white;
   transition: transform 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .toggle.on::after { transform: translateX(20px); }
@@ -411,26 +422,27 @@ button { font-family: inherit; }
   border-radius: 16px;
   border: 2px dashed var(--card-border);
   background: transparent;
-  color: var(--foam);
+  color: var(--aqua-strong);
   cursor: pointer;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .notif-status { font-size: 16px; color: var(--ink-dim); margin-top: 10px; line-height: 1.6; }
-.notif-status.warn { color: var(--sand); }
+.notif-status.warn { color: var(--sun-strong); }
 
 .primary-btn {
   width: 100%;
   padding: 18px;
   border-radius: 18px;
   border: none;
-  background: var(--aqua);
-  color: #0a1a3d;
+  background: linear-gradient(135deg, var(--aqua) 0%, var(--aqua-strong) 100%);
+  color: white;
   font-weight: 800;
   font-size: 19px;
   cursor: pointer;
   margin-top: 6px;
+  box-shadow: 0 8px 18px rgba(3, 155, 229, 0.3);
 }
 
 .primary-btn:disabled { opacity: 0.6; }
@@ -440,8 +452,8 @@ button { font-family: inherit; }
   padding: 16px;
   border-radius: 16px;
   border: 2px solid var(--card-border);
-  background: var(--card);
-  color: var(--foam);
+  background: #f2fbff;
+  color: var(--heading);
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
@@ -452,12 +464,12 @@ button { font-family: inherit; }
 
 input[type="text"], input[type="url"] {
   width: 100%;
-  background: var(--card);
+  background: #f2fbff;
   border: 2px solid var(--card-border);
-  color: var(--foam);
+  color: var(--heading);
   font-size: 18px;
   padding: 14px 16px;
   border-radius: 16px;
 }
 
-::selection { background: var(--aqua-dim); }
+::selection { background: var(--aqua); color: white; }

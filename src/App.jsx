@@ -264,53 +264,57 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="topbar">
-        <div className="brand">老媽喝水</div>
-        <button className="icon-btn" onClick={() => setShowSettings(true)} aria-label="設定">
-          ⚙
-        </button>
-      </div>
+      <div className="hero">
+        <div className="topbar">
+          <div className="brand">老媽喝水</div>
+          <button className="icon-btn" onClick={() => setShowSettings(true)} aria-label="設定">
+            ⚙
+          </button>
+        </div>
 
-      <div className="tank-wrap">
-        <div className="tank-water" style={{ height: `${percent}%` }} />
-        <div className="tank-readout">
-          <div className="tank-number">{state.total}</div>
-          <div className="tank-goal">/ {state.goal} cc</div>
-          <div className="tank-percent">已達成 {percent}%</div>
+        <div className="tank-wrap">
+          <div className="tank-water" style={{ height: `${percent}%` }} />
+          <div className="tank-readout">
+            <div className="tank-number">{state.total}</div>
+            <div className="tank-goal">/ {state.goal} cc</div>
+            <div className="tank-percent">已達成 {percent}%</div>
+          </div>
         </div>
       </div>
 
-      <div className="quick-row">
-        {QUICK_AMOUNTS.map((amt) => (
-          <button key={amt} className="quick-btn" onClick={() => addWater(amt)}>
-            <span className="amt">+{amt}</span>
-            <span className="unit">cc</span>
-          </button>
-        ))}
-      </div>
+      <div className="content">
+        <div className="quick-row">
+          {QUICK_AMOUNTS.map((amt) => (
+            <button key={amt} className="quick-btn" onClick={() => addWater(amt)}>
+              <span className="amt">+{amt}</span>
+              <span className="unit">cc</span>
+            </button>
+          ))}
+        </div>
 
-      <div className="undo-row">
-        {lastEntry && state.entries[0] === lastEntry && (
-          <button className="undo-btn" onClick={undoLast}>
-            復原剛剛新增的 {lastEntry.amount}cc
-          </button>
-        )}
-      </div>
+        <div className="undo-row">
+          {lastEntry && state.entries[0] === lastEntry && (
+            <button className="undo-btn" onClick={undoLast}>
+              復原剛剛新增的 {lastEntry.amount}cc
+            </button>
+          )}
+        </div>
 
-      <div className="log-section">
-        <div className="log-title">今日紀錄</div>
-        {state.entries.length === 0 ? (
-          <div className="log-empty">還沒有紀錄，點上面的按鈕開始記錄喝水量吧</div>
-        ) : (
-          <div className="log-list">
-            {state.entries.map((e, i) => (
-              <div className="log-item" key={i}>
-                <span className="time">{e.time}</span>
-                <span>{e.amount} cc</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="log-section">
+          <div className="log-title">今日紀錄</div>
+          {state.entries.length === 0 ? (
+            <div className="log-empty">還沒有紀錄，點上面的按鈕開始記錄喝水量吧</div>
+          ) : (
+            <div className="log-list">
+              {state.entries.map((e, i) => (
+                <div className="log-item" key={i}>
+                  <span className="time">{e.time}</span>
+                  <span>{e.amount} cc</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {showSettings && (
