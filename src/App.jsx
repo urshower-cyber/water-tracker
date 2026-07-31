@@ -266,7 +266,7 @@ export default function App() {
     <div className="app">
       <div className="hero">
         <div className="topbar">
-          <div className="brand">老媽喝水</div>
+          <div className="brand">老媽記得要喝水喔~</div>
           <button className="icon-btn" onClick={() => setShowSettings(true)} aria-label="設定">
             ⚙
           </button>

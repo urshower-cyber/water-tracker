@@ -51,20 +51,23 @@ button { font-family: inherit; }
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 6px;
 }
 
 .brand {
-  font-family: 'Fraunces', serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 30px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.25;
   color: var(--heading);
   text-shadow: 0 1px 6px rgba(255, 255, 255, 0.7);
 }
 
 .icon-btn {
+  flex-shrink: 0;
   background: rgba(255, 255, 255, 0.85);
   border: 2px solid var(--card-border);
   color: var(--aqua-strong);
