@@ -1,0 +1,14 @@
+name: 飲水提醒排程
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  trigger-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 呼叫 Vercel 推播檢查
+        run: |
+          curl -f -s "${{ secrets.REMINDER_ENDPOINT }}" || exit 1
