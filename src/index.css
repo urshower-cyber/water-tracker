@@ -142,13 +142,10 @@ button { font-family: inherit; }
 }
 
 .tank-percent {
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--sand);
-  z-index: 2;
+  margin-top: 10px;
 }
 
 .quick-row {

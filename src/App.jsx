@@ -273,10 +273,10 @@ export default function App() {
 
       <div className="tank-wrap">
         <div className="tank-water" style={{ height: `${percent}%` }} />
-        <div className="tank-percent">{percent}%</div>
         <div className="tank-readout">
           <div className="tank-number">{state.total}</div>
           <div className="tank-goal">/ {state.goal} cc</div>
+          <div className="tank-percent">已達成 {percent}%</div>
         </div>
       </div>
 
