@@ -49,6 +49,8 @@ function loadState() {
     sheetsUrl: '',
     firedToday: [],
     pushEnabled: false,
+    history: [],
+    achievedDate: null,
   }
   if (!raw) return defaults
   try {
@@ -86,7 +88,7 @@ export default function App() {
     saveState(state)
   }, [state])
 
-  // 檢查是否跨日，跨日就把昨天的資料存進待同步佇列並歸零
+  // 檢查是否跨日，跨日就把昨天的資料存進待同步佇列、歸零，並存進永久歷史紀錄
   useEffect(() => {
     const check = () => {
       const t = todayStr()
@@ -95,7 +97,19 @@ export default function App() {
           if (prev.total > 0 || prev.entries.length > 0) {
             pushHistory({ date: prev.date, total: prev.total, goal: prev.goal, entries: prev.entries })
           }
-          return { ...prev, date: t, total: 0, entries: [], firedToday: [] }
+          const newHistory = [
+            { date: prev.date, total: prev.total, goal: prev.goal },
+            ...prev.history,
+          ].slice(0, 120)
+          return {
+            ...prev,
+            date: t,
+            total: 0,
+            entries: [],
+            firedToday: [],
+            history: newHistory,
+            achievedDate: null,
+          }
         })
       }
     }
@@ -218,13 +232,24 @@ export default function App() {
     setState((prev) => ({ ...prev, pushEnabled: false }))
   }
 
+  const [showAchievement, setShowAchievement] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+
   const addWater = (amount) => {
     const entry = { time: nowTimeLabel(), amount }
-    setState((prev) => ({
-      ...prev,
-      total: prev.total + amount,
-      entries: [entry, ...prev.entries],
-    }))
+    setState((prev) => {
+      const newTotal = prev.total + amount
+      const justAchieved = newTotal >= prev.goal && prev.total < prev.goal && prev.achievedDate !== prev.date
+      if (justAchieved) {
+        setShowAchievement(true)
+      }
+      return {
+        ...prev,
+        total: newTotal,
+        entries: [entry, ...prev.entries],
+        achievedDate: justAchieved ? prev.date : prev.achievedDate,
+      }
+    })
     setLastEntry(entry)
   }
 
@@ -267,9 +292,14 @@ export default function App() {
       <div className="hero">
         <div className="topbar">
           <div className="brand">老媽記得要喝水喔~</div>
-          <button className="icon-btn" onClick={() => setShowSettings(true)} aria-label="設定">
-            ⚙
-          </button>
+          <div className="topbar-actions">
+            <button className="icon-btn" onClick={() => setShowHistory(true)} aria-label="歷史紀錄">
+              📅
+            </button>
+            <button className="icon-btn" onClick={() => setShowSettings(true)} aria-label="設定">
+              ⚙
+            </button>
+          </div>
         </div>
 
         <div className="tank-wrap">
@@ -330,8 +360,62 @@ export default function App() {
           onDisablePush={disablePush}
         />
       )}
+
+      {showHistory && (
+        <HistoryPanel history={state.history} onClose={() => setShowHistory(false)} />
+      )}
+
+      {showAchievement && (
+        <div className="achieve-overlay" onClick={() => setShowAchievement(false)}>
+          <div className="achieve-card">
+            <div className="achieve-emoji">🎉</div>
+            <div className="achieve-text">媽好棒！明天繼續加油！</div>
+            <button className="primary-btn" onClick={() => setShowAchievement(false)}>
+              謝謝
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+function HistoryPanel({ history, onClose }) {
+  return (
+    <div className="sheet-overlay" onClick={onClose}>
+      <div className="sheet-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-header">
+          <h2>歷史紀錄</h2>
+          <button className="icon-btn" onClick={onClose} aria-label="關閉">
+            ✕
+          </button>
+        </div>
+
+        {history.length === 0 ? (
+          <div className="log-empty">還沒有前幾天的紀錄，明天再回來看看吧</div>
+        ) : (
+          <div className="history-list">
+            {history.map((h) => {
+              const met = h.total >= h.goal
+              return (
+                <div className={`history-item ${met ? 'met' : 'not-met'}`} key={h.date}>
+                  <span className="history-date">{formatDateLabel(h.date)}</span>
+                  <span className="history-amount">{h.total} cc</span>
+                  <span className="history-badge">{met ? '✓ 達標' : '未達標'}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00')
+  const weekday = ['日', '一', '二', '三', '四', '五', '六'][d.getDay()]
+  return `${d.getMonth() + 1}/${d.getDate()}（週${weekday}）`
 }
 
 function SettingsPanel({

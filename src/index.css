@@ -66,6 +66,12 @@ button { font-family: inherit; }
   text-shadow: 0 1px 6px rgba(255, 255, 255, 0.7);
 }
 
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .icon-btn {
   flex-shrink: 0;
   background: rgba(255, 255, 255, 0.85);
@@ -476,3 +482,92 @@ input[type="text"], input[type="url"] {
 }
 
 ::selection { background: var(--aqua); color: white; }
+
+/* ---- 歷史紀錄 ---- */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  border: 2px solid var(--card-border);
+}
+
+.history-item.met {
+  background: #eafaf0;
+  border-color: rgba(56, 176, 100, 0.35);
+}
+
+.history-item.not-met {
+  background: #fff3ee;
+  border-color: rgba(230, 84, 63, 0.25);
+}
+
+.history-date {
+  color: var(--heading);
+  flex: 1.2;
+}
+
+.history-amount {
+  color: var(--ink);
+  flex: 1;
+  text-align: center;
+}
+
+.history-badge {
+  flex: 1;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.history-item.met .history-badge { color: #2e9e5b; }
+.history-item.not-met .history-badge { color: var(--danger); }
+
+/* ---- 達標鼓勵彈窗 ---- */
+.achieve-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 59, 92, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 24px;
+  animation: fadeIn 0.2s ease;
+}
+
+.achieve-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 36px 28px;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(13, 59, 92, 0.3);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.achieve-emoji {
+  font-size: 56px;
+  margin-bottom: 12px;
+}
+
+.achieve-text {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--heading);
+  margin-bottom: 22px;
+  line-height: 1.4;
+}
